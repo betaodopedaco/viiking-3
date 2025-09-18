@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+if (!message) return;
+addMessage(message, true);
+userInput.value = '';
+loading.style.display = 'block';
+try {
+const response = await fetch('/chat', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify({
+message: message,
+session_id: sessionId
+})
+});
+const data = await response.json();
+if (data.error) {
+addMessage('Erro: ' + data.error);
+} else {
+addMessage(data.response);
+}
+} catch (error) {
+addMessage('Erro de conexão com o servidor');
+} finally {
+loading.style.display = 'none';
+}
+}
+
+
+// Enviar mensagem ao pressionar Enter
+document.getElementById('user-input').addEventListener('keypress', function(e) {
+if (e.key === 'Enter') {
+sendMessage();
+}
+});
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@ import os
 import requests
 import time
 import uuid
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
 
 # Optional Redis import
@@ -14,6 +14,13 @@ except Exception:
 
 app = Flask(__name__, template_folder="templates")
 CORS(app, resources={r"/*": {"origins": "*"}})
+
+# =========================
+# Serve embed.min.js (coloque o arquivo em /static/embed.min.js)
+@app.route('/embed.min.js')
+def embed_js():
+    return send_from_directory('static', 'embed.min.js')
+# =========================
 
 # Config
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")

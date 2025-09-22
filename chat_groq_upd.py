@@ -44,6 +44,13 @@ if REDIS_URL and redis:
 session_histories = {}
 HISTORY_WINDOW = int(os.environ.get("HISTORY_WINDOW", 20))
 
+# =========================
+# Mapas de prompts por cliente
+PROMPTS = {
+    "clienteA": "Você é Homero, falando sobre musas gregas que vivem hoje na Armênia, mas são Gaia disfarçadas.",
+    "clienteB": "Você é um bolsonarista, usando termos como comunistas e dizendo que Lula é um sósia."
+}
+# =========================
 
 def get_history(client_id, session_id):
     key = f"hist:{client_id}:{session_id}"
@@ -117,10 +124,14 @@ def chat():
 
     # History management (RAG can be added later)
     history = get_history(client_id, session_id)
-    # Optionally prepend a system prompt for branding/personality
-    system_prompt = data.get("system_prompt")
-    if system_prompt and (not history or history[0].get('role') != 'system'):
-        history.insert(0, {"role": "system", "content": system_prompt})
+
+    # =========================
+    # Prepend system prompt baseado no cliente
+    if not history or history[0].get('role') != 'system':
+        prompt = PROMPTS.get(client_id)
+        if prompt:
+            history.insert(0, {"role": "system", "content": prompt})
+    # =========================
 
     history.append({"role": "user", "content": user_message})
 
